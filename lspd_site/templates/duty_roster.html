@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}جدول الشيفتات{% endblock %}
+
+{% block content %}
+<div class="mdt-header">
+    <h2>📅 جدول الشيفتات</h2>
+    <div class="mdt-status">
+        <span class="dot-online"></span> {{ stats.on_duty }} في الخدمة
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+    <div class="stat-card" style="border-color:#2ecc71">
+        <div class="stat-icon">🟢</div>
+        <div class="stat-value" style="color:#2ecc71">{{ stats.on_duty }}</div>
+        <div class="stat-label">في الخدمة</div>
+    </div>
+    <div class="stat-card" style="border-color:#ff9500">
+        <div class="stat-icon">🟡</div>
+        <div class="stat-value" style="color:#ff9500">{{ stats.busy }}</div>
+        <div class="stat-label">مشغول</div>
+    </div>
+    <div class="stat-card" style="border-color:#1e90ff">
+        <div class="stat-icon">☕</div>
+        <div class="stat-value" style="color:#1e90ff">{{ stats.break }}</div>
+        <div class="stat-label">راحة</div>
+    </div>
+    <div class="stat-card" style="border-color:#7a8ca8">
+        <div class="stat-icon">⚫</div>
+        <div class="stat-value" style="color:#7a8ca8">{{ stats.off_duty }}</div>
+        <div class="stat-label">خارج الخدمة</div>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+    <h3>🎯 حالتي الحالية</h3>
+    <p style="color:#a0b4cc;font-size:13px;margin-bottom:16px">اختر حالتك:</p>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <a href="{{ url_for('duty_update_status', new_status='ON_DUTY') }}"
+           class="btn" style="background:linear-gradient(135deg,#2ecc71,#1a9948);text-decoration:none;text-align:center">
+            🟢 في الخدمة
+        </a>
+        <a href="{{ url_for('duty_update_status', new_status='BUSY') }}"
+           class="btn" style="background:linear-gradient(135deg,#ff9500,#cc7600);text-decoration:none;text-align:center">
+            🟡 مشغول
+        </a>
+        <a href="{{ url_for('duty_update_status', new_status='BREAK') }}"
+           class="btn" style="background:linear-gradient(135deg,#1e90ff,#0066cc);text-decoration:none;text-align:center">
+            ☕ راحة
+        </a>
+        <a href="{{ url_for('duty_update_status', new_status='OFF_DUTY') }}"
+           class="btn" style="background:linear-gradient(135deg,#7a8ca8,#4a5a72);text-decoration:none;text-align:center">
+            ⚫ خارج الخدمة
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <h3>👮 الضباط في الشيفت</h3>
+
+    {% for o in officers %}
+    <div class="duty-item status-{{ o.status|lower }}">
+        <div style="display:flex;gap:12px;align-items:center;flex:1">
+            {% if o.image %}
+            <img src="{{ url_for('uploaded_file', filename=o.image) }}"
+                 style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #1e90ff">
+            {% else %}
+            <div style="width:48px;height:48px;border-radius:50%;background:rgba(30,144,255,0.1);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px">👤</div>
+            {% endif %}
+            <div>
+                <strong style="color:#1e90ff">{{ o.officer }}</strong>
+                <small style="display:block;color:#7a8ca8;font-size:12px">#{{ o.badge or '—' }} - {{ o.rank or '—' }}</small>
+            </div>
+        </div>
+        <div style="text-align:left">
+            <span class="status-badge status-{{ o.status|lower }}">
+                {% if o.status == 'ON_DUTY' %}🟢 في الخدمة
+                {% elif o.status == 'BUSY' %}🟡 مشغول
+                {% elif o.status == 'BREAK' %}☕ راحة
+                {% else %}⚫ خارج الخدمة{% endif %}
+            </span>
+            {% if o.shift_start %}
+            <small style="display:block;color:#7a8ca8;font-size:11px;margin-top:6px">منذ {{ o.shift_start }}</small>
+            {% endif %}
+            {% if o.location %}
+            <small style="display:block;color:#7a8ca8;font-size:11px">📍 {{ o.location }}</small>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <p class="muted" style="text-align:center;padding:40px">لا يوجد ضباط مسجلين</p>
+    {% endfor %}
+</div>
+{% endblock %}

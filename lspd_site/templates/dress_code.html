@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}اللبس الرسمي{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1200px; margin: 0 auto; padding-top: 20px;">
+    
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h2 style="color: #1e90ff; font-size: 32px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 15px rgba(30,144,255,0.5);">
+            👕 اللبس الرسمي (Dress Code)
+        </h2>
+        <p class="muted" style="margin-top: 10px;">اختر رتبتك عشان تعرف أرقام اللبس بتاعتها</p>
+    </div>
+
+    <div class="dress-grid">
+        {% for item in dress_data %}
+        <div class="dress-card">
+            <div class="dress-header">
+                <h3>{{ item.rank_ar }}</h3>
+                <span class="muted" style="font-size: 12px; font-family: Orbitron, monospace;">{{ item.rank_name }}</span>
+            </div>
+
+            <div class="dress-image-container">
+                <!-- مسار الصور اتعدل عشان يقرأ من فولدر img مباشرة -->
+                <img src="{{ url_for('static', filename='img/' + item.image) }}" 
+                     alt="{{ item.rank_name }}"
+                     onerror="this.src='https://via.placeholder.com/300x400/111d33/1e90ff?text=No+Image'">
+            </div>
+
+            <div class="dress-stats">
+                <div class="stat"><span>القمصان</span> <strong>{{ item.shirts }}</strong></div>
+                <div class="stat"><span>البناطيل</span> <strong>{{ item.pants }}</strong></div>
+                <div class="stat"><span>القبعات</span> <strong>{{ item.hats }}</strong></div>
+                <div class="stat"><span>الأقنعة</span> <strong>{{ item.masks }}</strong></div>
+                <div class="stat"><span>الإكسسوارات</span> <strong>{{ item.accessories }}</strong></div>
+                <div class="stat"><span>الدروع</span> <strong>{{ item.armor }}</strong></div>
+                <div class="stat"><span>الحزام</span> <strong>{{ item.belts }}</strong></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<style>
+    .dress-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .dress-card {
+        background: rgba(10, 15, 25, 0.85);
+        border: 1px solid #1e3a5f;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .dress-card:hover {
+        border-color: #1e90ff;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(30,144,255,0.2);
+    }
+
+    .dress-header {
+        padding: 15px;
+        text-align: center;
+        background: rgba(30,144,255,0.1);
+        border-bottom: 1px solid #1e3a5f;
+    }
+
+    .dress-header h3 {
+        color: #1e90ff;
+        margin: 0 0 5px 0;
+        font-size: 18px;
+    }
+
+    .dress-image-container {
+        width: 100%;
+        height: 350px;
+        background: #050810;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .dress-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top;
+    }
+
+    .dress-stats {
+        padding: 15px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        background: rgba(5,8,16,0.6);
+    }
+
+    .dress-stats .stat {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(30,144,255,0.05);
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+    }
+
+    .dress-stats .stat span {
+        color: #a0b4cc;
+    }
+
+    .dress-stats .stat strong {
+        color: #ffd700;
+        font-family: 'Orbitron', monospace;
+        font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+        .dress-grid { grid-template-columns: 1fr; }
+        .dress-image-container { height: 250px; }
+    }
+</style>
+{% endblock %}

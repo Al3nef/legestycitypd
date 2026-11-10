@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}محادثة مع {{ other }}{% endblock %}
+
+{% block content %}
+<div class="chat-wrap-simple">
+
+    <div class="chat-head">
+        <span>💬 محادثة مع <strong>{{ other }}</strong></span>
+        <span class="enc-live" style="background:rgba(30,144,255,0.1);border-color:rgba(30,144,255,0.3);color:#1e90ff">
+            <span class="dot" style="background:#1e90ff;box-shadow:0 0 8px #1e90ff"></span>
+            محادثة مباشرة
+        </span>
+    </div>
+
+    <div class="messages" id="msgs"></div>
+
+    <div class="input-bar">
+        <input id="input" placeholder="اكتب رسالتك..." autocomplete="off">
+        <button id="send">إرسال</button>
+    </div>
+</div>
+
+<script>
+    window.ME = "{{ session.get('user') }}";
+    window.OTHER = "{{ other }}";
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chat.js') }}?v=4"></script>
+{% endblock %}

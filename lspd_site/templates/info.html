@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}قاعدة المعلومات{% endblock %}
+
+{% block content %}
+<h2 class="page-title">📁 قاعدة المعلومات</h2>
+
+<div class="card" style="margin-bottom:20px">
+    <h3>➕ إضافة معلومة جديدة (مع إمكانية إرفاق صورة)</h3>
+    <form method="POST" action="{{ url_for('info_add') }}" enctype="multipart/form-data">
+
+        <input type="text" name="title" placeholder="عنوان المعلومة" required>
+
+        <textarea name="body" placeholder="المحتوى" required></textarea>
+
+        <div class="form-row" style="margin-top:12px">
+            <select name="category">
+                <option value="general">عام</option>
+                <option value="case">قضية</option>
+                <option value="suspect">مشتبه به</option>
+                <option value="operation">عملية</option>
+                <option value="evidence">دليل</option>
+            </select>
+            <select name="classification">
+                <option value="PUBLIC">عام</option>
+                <option value="CONFIDENTIAL" selected>سري</option>
+                <option value="TOP_SECRET">سري للغاية</option>
+            </select>
+        </div>
+
+        <div style="margin-top:12px">
+            <label style="display:block;color:#1e90ff;font-size:13px;margin-bottom:8px;font-weight:700">
+                📷 إرفاق صورة (اختياري)
+            </label>
+
+            <input type="file"
+                   name="image"
+                   accept="image/*"
+                   id="imageInput"
+                   style="width:100%;padding:10px;background:rgba(5,8,16,0.6);border:1px solid var(--border);border-radius:10px;color:var(--text);cursor:pointer">
+
+            <div id="preview" style="margin-top:10px;display:none;position:relative;display:inline-block">
+                <img id="previewImg"
+                     style="max-width:200px;max-height:200px;border-radius:10px;border:2px solid #1e90ff;display:block">
+                <button type="button"
+                        onclick="removePreview()"
+                        style="position:absolute;top:-10px;left:-10px;width:32px;height:32px;border-radius:50%;background:#ff4757;color:#fff;border:2px solid #fff;cursor:pointer;font-size:16px;font-weight:bold;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(255,71,87,0.5)"
+                        title="حذف الصورة">
+                    ✕
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn" style="margin-top:16px">حفظ المعلومة</button>
+    </form>
+</div>
+
+{% for i in infos %}
+<div class="info-card">
+    <span class="classif {{ i.classification|lower }}">{{ i.classification }}</span>
+    <h4>{{ i.title }}</h4>
+
+    {% if i.image %}
+    <div style="margin:12px 0;text-align:center;position:relative;display:inline-block">
+        <img src="{{ url_for('uploaded_file', filename=i.image) }}"
+             alt="{{ i.title }}"
+             style="max-width:100%;max-height:400px;border-radius:10px;border:1px solid var(--border);cursor:pointer"
+             onclick="window.open(this.src, '_blank')">
+
+        {% if session.get('is_admin') %}
+        <form method="POST"
+              action="{{ url_for('info_remove_image', info_id=i.id) }}"
+              style="position:absolute;top:8px;left:8px;margin:0"
+              onsubmit="return confirm('حذف الصورة؟')">
+            <button type="submit"
+                    style="background:#ff4757;color:#fff;border:2px solid #fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;font-weight:bold;box-shadow:0 2px 10px rgba(255,71,87,0.5)"
+                    title="حذف الصورة">🗑️</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <p>{{ i.body }}</p>
+
+    <small>
+        {{ i.author }} - {{ i.created_at }} | التصنيف: {{ i.category }}
+        {% if session.get('is_admin') %}
+        | <a href="{{ url_for('info_delete', info_id=i.id) }}"
+             style="color:#ff4757"
+             onclick="return confirm('حذف المعلومة؟')">حذف</a>
+        {% endif %}
+    </small>
+</div>
+{% else %}
+<p class="muted">لا توجد معلومات بعد</p>
+{% endfor %}
+
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const preview = document.getElementById('preview');
+    const previewImg = document.getElementById('previewImg');
+
+    imageInput?.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            if (!file.type.startsWith('image/')) {
+                alert('الملف مش صورة');
+                imageInput.value = '';
+                return;
+            }
+            if (file.size > 16 * 1024 * 1024) {
+                alert('حجم الصورة أكبر من 16 ميجا');
+                imageInput.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                previewImg.src = ev.target.result;
+                preview.style.display = 'inline-block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function removePreview() {
+        imageInput.value = '';
+        previewImg.src = '';
+        preview.style.display = 'none';
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block title %}MDT - الأشخاص{% endblock %}
+
+{% block content %}
+<div class="mdt-header">
+    <h2>👤 سجل الأشخاص</h2>
+    <a href="{{ url_for('mdt') }}" class="btn-sm" style="background:#24344a">← رجوع</a>
+</div>
+
+<div class="mdt-quick-search" style="margin-bottom:20px">
+    <input type="text"
+           id="liveSearch"
+           placeholder="🔍 ابحث بالاسم أو رقم الهاتف..."
+           autocomplete="off"
+           value="{{ query }}">
+</div>
+
+<div class="card" id="addForm" style="margin-bottom:20px">
+    <h3>➕ إضافة شخص جديد</h3>
+    <form method="POST" action="{{ url_for('mdt_citizen_add') }}" enctype="multipart/form-data">
+        <div class="form-row">
+            <input type="text" name="full_name" placeholder="الاسم الكامل" required>
+            <input type="text" name="phone" placeholder="رقم الهاتف">
+        </div>
+
+        <div class="form-row">
+            <select name="license_status">
+                <option value="VALID">رخصة قيادة: سارية</option>
+                <option value="EXPIRED">منتهية</option>
+                <option value="SUSPENDED">موقوفة</option>
+                <option value="NONE">لا يوجد</option>
+            </select>
+            <select name="weapon_license">
+                <option value="NONE">رخصة سلاح: لا يوجد</option>
+                <option value="VALID">سارية</option>
+                <option value="EXPIRED">منتهية</option>
+            </select>
+            <select name="status">
+                <option value="CLEAN">🟢 نظيف</option>
+                <option value="WARNING">🟡 تنبيه</option>
+                <option value="DANGEROUS">🔴 خطير</option>
+            </select>
+        </div>
+
+        <textarea name="criminal_record" placeholder="السجل الجنائي"></textarea>
+        <textarea name="notes" placeholder="ملاحظات"></textarea>
+
+        <div style="margin-top:12px">
+            <label style="display:block;color:#1e90ff;font-size:13px;margin-bottom:8px;font-weight:700">
+                📷 صورة الشخص (اختياري)
+            </label>
+            <input type="file"
+                   name="image"
+                   accept="image/*"
+                   id="imageInput"
+                   style="width:100%;padding:10px;background:rgba(5,8,16,0.6);border:1px solid var(--border);border-radius:10px;color:var(--text);cursor:pointer">
+
+            <div id="preview" style="margin-top:10px;display:none;position:relative;display:inline-block">
+                <img id="previewImg"
+                     style="max-width:200px;max-height:200px;border-radius:10px;border:2px solid #1e90ff;display:block">
+                <button type="button"
+                        onclick="removePreview()"
+                        style="position:absolute;top:-10px;left:-10px;width:32px;height:32px;border-radius:50%;background:#ff4757;color:#fff;border:2px solid #fff;cursor:pointer;font-size:16px;font-weight:bold;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(255,71,87,0.5)"
+                        title="حذف الصورة">✕</button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn" style="margin-top:16px">حفظ الشخص</button>
+    </form>
+</div>
+
+<h3 id="resultsTitle" style="color:#1e90ff;margin-bottom:16px;display:none">
+    📋 نتائج البحث (<span id="resultsCount">0</span>)
+</h3>
+
+<div id="citizensList">
+{% for c in citizens %}
+<div class="citizen-card status-{{ c.status|lower }}" data-name="{{ c.full_name|lower }}" data-phone="{{ c.phone|lower if c.phone else '' }}">
+    <div class="citizen-header">
+        <div style="display:flex;gap:14px;align-items:center">
+            {% if c.image %}
+            <img src="{{ url_for('uploaded_file', filename=c.image) }}"
+                 alt="{{ c.full_name }}"
+                 style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid #1e90ff"
+                 onclick="window.open(this.src, '_blank')">
+            {% else %}
+            <div style="width:60px;height:60px;border-radius:50%;background:rgba(30,144,255,0.1);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px">👤</div>
+            {% endif %}
+            <div>
+                <h4>{{ c.full_name }}</h4>
+                <small>📞 {{ c.phone or '—' }}</small>
+            </div>
+        </div>
+        <div class="citizen-badges">
+            {% if c.is_wanted %}
+            <span class="badge-wanted">⚠️ مطلوب</span>
+            {% endif %}
+            <span class="status-badge status-{{ c.status|lower }}">{{ c.status }}</span>
+        </div>
+    </div>
+    <div class="citizen-meta">
+        <span>🪪 {{ c.license_status }}</span>
+        <span>🔫 {{ c.weapon_license }}</span>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <a href="{{ url_for('mdt_citizen_detail', cid=c.id) }}" class="btn-sm">عرض الملف</a>
+        {% if can_delete() %}
+        <a href="{{ url_for('mdt_citizen_delete', cid=c.id) }}"
+           class="btn-sm danger"
+           onclick="return confirm('حذف {{ c.full_name }}؟')">🗑️ حذف</a>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<p class="muted" id="emptyMsg" style="text-align:center;padding:40px">لا يوجد أشخاص</p>
+{% endfor %}
+</div>
+
+<p class="muted" id="noResultsMsg" style="text-align:center;padding:40px;display:none">
+    🔍 لا توجد نتائج مطابقة للبحث
+</p>
+
+<script>
+const imageInput = document.getElementById('imageInput');
+const preview = document.getElementById('preview');
+const previewImg = document.getElementById('previewImg');
+
+imageInput?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        if (!file.type.startsWith('image/')) {
+            alert('الملف مش صورة');
+            imageInput.value = '';
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('حجم الصورة أكبر من 5 ميجا');
+            imageInput.value = '';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            previewImg.src = ev.target.result;
+            preview.style.display = 'inline-block';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+function removePreview() {
+    imageInput.value = '';
+    previewImg.src = '';
+    preview.style.display = 'none';
+}
+
+const liveSearch = document.getElementById('liveSearch');
+const addForm = document.getElementById('addForm');
+const resultsTitle = document.getElementById('resultsTitle');
+const resultsCount = document.getElementById('resultsCount');
+const noResultsMsg = document.getElementById('noResultsMsg');
+
+liveSearch.addEventListener('input', function() {
+    const q = this.value.trim().toLowerCase();
+
+    if (q.length === 0) {
+        addForm.style.display = 'block';
+        resultsTitle.style.display = 'none';
+        noResultsMsg.style.display = 'none';
+
+        document.querySelectorAll('.citizen-card').forEach(card => {
+            card.style.display = '';
+        });
+        return;
+    }
+
+    addForm.style.display = 'none';
+    resultsTitle.style.display = 'block';
+
+    let shown = 0;
+    document.querySelectorAll('.citizen-card').forEach(card => {
+        const name = card.dataset.name || '';
+        const phone = card.dataset.phone || '';
+
+        if (name.includes(q) || phone.includes(q)) {
+            card.style.display = '';
+            shown++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    resultsCount.textContent = shown;
+    noResultsMsg.style.display = shown === 0 ? 'block' : 'none';
+});
+</script>
+{% endblock %}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>LSPD - غرفة العمليات</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="sidebar">
+            <h2>🛡️ LSPD</h2>
+            <div class="user">👤 {{ user }}</div>
+            <div class="rooms">
+                <div class="room active" data-room="general">📻 غرفة عامة</div>
+                <div class="room" data-room="dispatch">🚨 الإرسال</div>
+            </div>
+        </div>
+
+        <div class="chat-main">
+            <div class="chat-header">غرفة العمليات</div>
+            <div id="messages" class="messages"></div>
+            <div class="input-area">
+                <input id="msgInput" placeholder="اكتب رسالة مشفّرة..." autocomplete="off">
+                <button id="sendBtn">إرسال 🔐</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}سجل النشاط{% endblock %}
+
+{% block content %}
+<div class="mdt-header">
+    <h2>📋 سجل النشاط</h2>
+    <div class="mdt-status">
+        <span class="mdt-user">👤 {{ session.get('user') }}</span>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+    <h3>🔎 فلترة حسب المستخدم</h3>
+    <div class="form-row">
+        <select onchange="location.href='?user='+this.value">
+            <option value="ALL" {% if user_filter == 'ALL' %}selected{% endif %}>الكل</option>
+            {% for u in users %}
+            <option value="{{ u }}" {% if user_filter == u %}selected{% endif %}>{{ u }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="card">
+    <h3>📊 النشاطات ({{ activities|length }})</h3>
+
+    {% for a in activities %}
+    <div class="activity-item">
+        <div class="activity-user">
+            <strong>👤 {{ a.user }}</strong>
+            <small>{{ a.created_at }}</small>
+        </div>
+        <div class="activity-action">
+            <span style="color:#1e90ff;font-weight:700">{{ a.action }}</span>
+            {% if a.details %}
+            <span style="color:#a0b4cc;font-size:13px"> — {{ a.details }}</span>
+            {% endif %}
+        </div>
+        {% if a.ip %}
+        <small style="color:#4a5a72;font-family:Orbitron,monospace">🌐 {{ a.ip }}</small>
+        {% endif %}
+    </div>
+    {% else %}
+    <p class="muted" style="text-align:center;padding:40px">لا يوجد نشاطات</p>
+    {% endfor %}
+</div>
+{% endblock %}

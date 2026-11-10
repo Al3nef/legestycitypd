@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}MDT - المركبات{% endblock %}
+
+{% block content %}
+<div class="mdt-header">
+    <h2>🚗 سجل المركبات</h2>
+    <a href="{{ url_for('mdt') }}" class="btn-sm" style="background:#24344a">← رجوع</a>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+    <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap">
+        <input type="text" name="q" value="{{ query }}"
+               placeholder="ابحث باللوحة أو اسم المالك..."
+               style="flex:1;min-width:200px">
+        <button type="submit" class="btn" style="width:auto;padding:12px 24px">🔍 بحث</button>
+    </form>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+    <h3>➕ إضافة مركبة</h3>
+    <form method="POST" action="{{ url_for('mdt_vehicle_add') }}">
+        <div class="form-row">
+            <input type="text" name="plate" placeholder="رقم اللوحة" required>
+            <input type="text" name="model" placeholder="الموديل">
+            <input type="text" name="color" placeholder="اللون">
+        </div>
+        <input type="text" name="owner_name" placeholder="اسم المالك">
+
+        <div class="form-row">
+            <select name="registration_status">
+                <option value="VALID">تسجيل: ساري</option>
+                <option value="EXPIRED">منتهي</option>
+                <option value="STOLEN">مسروق</option>
+            </select>
+            <select name="insurance_status">
+                <option value="VALID">تأمين: ساري</option>
+                <option value="EXPIRED">منتهي</option>
+            </select>
+            <select name="status">
+                <option value="CLEAN">🟢 نظيف</option>
+                <option value="WARNING">🟡 تنبيه</option>
+                <option value="DANGEROUS">🔴 خطير</option>
+            </select>
+        </div>
+
+        <textarea name="notes" placeholder="ملاحظات"></textarea>
+        <button type="submit" class="btn" style="margin-top:12px">حفظ المركبة</button>
+    </form>
+</div>
+
+{% for v in vehicles %}
+<div class="vehicle-card-mdt status-{{ v.status|lower }}">
+    <div class="vehicle-header">
+        <h4 class="plate-big">{{ v.plate }}</h4>
+        <span class="status-badge status-{{ v.status|lower }}">{{ v.status }}</span>
+    </div>
+    <div class="citizen-meta">
+        <span>🚗 {{ v.model or '—' }} ({{ v.color or '—' }})</span>
+        <span>👤 {{ v.owner_name or '—' }}</span>
+        <span>📋 {{ v.registration_status }}</span>
+        <span>🛡️ {{ v.insurance_status }}</span>
+    </div>
+    {% if can_delete() %}
+    <div style="margin-top:10px">
+        <a href="{{ url_for('mdt_vehicle_delete', vid=v.id) }}"
+           class="btn-sm danger"
+           onclick="return confirm('حذف المركبة {{ v.plate }}؟')">🗑️ حذف</a>
+    </div>
+    {% endif %}
+</div>
+{% else %}
+<p class="muted" style="text-align:center;padding:40px">لا توجد مركبات</p>
+{% endfor %}
+{% endblock %}

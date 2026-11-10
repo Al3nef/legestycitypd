@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}MDT{% endblock %}
+
+{% block content %}
+<div class="mdt-header">
+    <h2>🖥️ MDT - Mobile Data Terminal</h2>
+    <div class="mdt-status">
+        <span class="dot-online"></span> متصل
+        <span class="mdt-user">👤 {{ session.get('user') }}</span>
+    </div>
+</div>
+
+<div class="mdt-quick-search">
+    <input type="text"
+           id="quickSearch"
+           placeholder="🔍 بحث سريع (اسم، رقم قومي، لوحة)..."
+           autocomplete="off">
+    <div id="searchResults" class="search-results"></div>
+</div>
+
+<div class="mdt-tabs">
+    <a href="{{ url_for('mdt_citizens') }}" class="mdt-tab">
+        <div class="mdt-tab-icon">👤</div>
+        <div class="mdt-tab-label">الأشخاص</div>
+    </a>
+    <a href="{{ url_for('mdt_vehicles') }}" class="mdt-tab">
+        <div class="mdt-tab-icon">🚗</div>
+        <div class="mdt-tab-label">المركبات</div>
+    </a>
+    <a href="{{ url_for('mdt_calls') }}" class="mdt-tab">
+        <div class="mdt-tab-icon">📞</div>
+        <div class="mdt-tab-label">البلاغات</div>
+    </a>
+    <a href="{{ url_for('mdt_tickets') }}" class="mdt-tab">
+        <div class="mdt-tab-icon">📝</div>
+        <div class="mdt-tab-label">المخالفات</div>
+    </a>
+    <a href="{{ url_for('mdt_wanted') }}" class="mdt-tab">
+        <div class="mdt-tab-icon">⚠️</div>
+        <div class="mdt-tab-label">المطلوبين</div>
+    </a>
+</div>
+
+<div class="mdt-info">
+    <h3>ℹ️ مرحباً بك في MDT</h3>
+    <p>استخدم التبويبات بالأعلى للوصول السريع لقواعد البيانات:</p>
+    <ul style="line-height:2;color:#a0b4cc;margin-top:12px">
+        <li>👤 <strong>الأشخاص</strong> - بحث وإضافة سجلات الأشخاص</li>
+        <li>🚗 <strong>المركبات</strong> - بحث اللوحات والملكية</li>
+        <li>📞 <strong>البلاغات</strong> - بلاغات 911 الحية</li>
+        <li>📝 <strong>المخالفات</strong> - إصدار ومتابعة التيكتات</li>
+        <li>⚠️ <strong>المطلوبين</strong> - قائمة Wanted List</li>
+    </ul>
+</div>
+
+<script>
+const searchInput = document.getElementById('quickSearch');
+const resultsBox = document.getElementById('searchResults');
+let searchTimer;
+
+searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    const q = searchInput.value.trim();
+
+    if (q.length < 2) {
+        resultsBox.style.display = 'none';
+        return;
+    }
+
+    searchTimer = setTimeout(async () => {
+        const res = await fetch(`/mdt/search?q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+
+        let html = '';
+
+        if (data.citizens.length > 0) {
+            html += '<div class="result-group">👤 أشخاص</div>';
+            data.citizens.forEach(c => {
+                html += `<a href="/mdt/citizens/${c.id}" class="result-item">
+                    <strong>${c.full_name}</strong>
+                    <small>${c.national_id || '—'} | ${c.status}</small>
+                </a>`;
+            });
+        }
+
+        if (data.vehicles.length > 0) {
+            html += '<div class="result-group">🚗 مركبات</div>';
+            data.vehicles.forEach(v => {
+                html += `<a href="/mdt/vehicles?q=${v.plate}" class="result-item">
+                    <strong>${v.plate}</strong>
+                    <small>${v.model || '—'} | ${v.owner_name || '—'}</small>
+                </a>`;
+            });
+        }
+
+        if (!html) {
+            html = '<div class="result-empty">لا توجد نتائج</div>';
+        }
+
+        resultsBox.innerHTML = html;
+        resultsBox.style.display = 'block';
+    }, 300);
+});
+
+document.addEventListener('click', (e) => {
+    if (!searchInput.contains(e.target) && !resultsBox.contains(e.target)) {
+        resultsBox.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

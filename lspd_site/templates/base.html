@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LSPD{% endblock %} - نظام إدارة القسم</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/lspd-logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=6">
+    <script>
+        // طبّق اللغة المحفوظة قبل تحميل الصفحة
+        (function() {
+            const lang = localStorage.getItem('lspd-lang') || 'ar';
+            document.documentElement.setAttribute('lang', lang);
+            document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+        })();
+    </script>
+</head>
+<body>
+
+{% if session.get('user') %}
+<nav class="navbar">
+    <div class="nav-brand">
+        <img src="{{ url_for('static', filename='img/lspd-logo.png') }}"
+             alt="LSPD"
+             class="nav-logo">
+        <span>نظام إدارة القسم</span>
+    </div>
+    <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}">لوحة التحكم</a>
+        <a href="{{ url_for('mdt') }}">MDT</a>
+        <a href="{{ url_for('dress_code') }}"> اللبس الرسمي</a>
+        <a href="{{ url_for('radio_protocols') }}"> البروتوكولات</a> <!-- 🆕 تم إضافة اللينك هنا -->
+        <a href="{{ url_for('duty_roster') }}">الشيفتات</a>
+        {% if can_chat(session.get('rank')) %}
+        <a href="{{ url_for('chat_list') }}">المحادثات</a>
+        {% endif %}
+        <a href="{{ url_for('cases_list') }}">القضايا</a>
+        <a href="{{ url_for('command_center') }}">القيادة</a>
+        <a href="{{ url_for('info_list') }}">المعلومات</a>
+        <a href="{{ url_for('tools') }}">التشفير</a>
+        
+        <a href="{{ url_for('points_management') }}" style="color:#ffd700; font-weight:900">⭐ النقاط</a>
+        
+        {% if session.get('is_admin') %}
+        <a href="{{ url_for('admin_panel') }}">الإدارة</a>
+        {% endif %}
+        {% if session.get('rank') in ['Colonel', 'Brigadier General', 'Major General', 'Lieutenant General', 'General'] %}
+        <a href="{{ url_for('activity_log') }}">السجل</a>
+        {% endif %}
+
+        <!-- 🔔 جرس الإشعارات -->
+        <div class="notification-bell" id="notifBell">
+            <span class="bell-icon">🔔</span>
+            <span class="bell-count" id="notifCount"></span>
+            <div class="notif-dropdown" id="notifDropdown">
+                <div class="notif-header">
+                    <span>الإشعارات</span>
+                    <a href="{{ url_for('notifications_read_all') }}"
+                       style="font-size:11px;color:#1e90ff;text-decoration:none">
+                        تعليم الكل
+                    </a>
+                </div>
+                <div id="notifList" class="notif-list">
+                    <p style="text-align:center;padding:20px;color:#7a8ca8">...</p>
+                </div>
+            </div>
+        </div>
+
+        <button class="icon-btn" id="langToggle" title="Change Language">🌐 EN</button>
+
+        <a href="{{ url_for('profile') }}" class="user-tag">
+            <span class="rank-pip"></span>
+            {{ session.get('user') }} | {{ session.get('rank') }}
+        </a>
+        <a href="{{ url_for('logout') }}" class="logout-btn">خروج</a>
+    </div>
+</nav>
+{% endif %}
+
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</div>
+
+{% if session.get('user') %}
+<!-- 🤖 زر الـ AI -->
+<button class="ai-fab" id="aiBtn" title="مساعد ذكي">🤖</button>
+
+<div class="ai-panel" id="aiPanel">
+    <div class="ai-header">
+        <div>
+            <span style="font-size:20px">🤖</span>
+            <strong>مساعد LSPD الذكي</strong>
+        </div>
+        <button class="ai-close" id="aiClose">✕</button>
+    </div>
+
+    <div class="ai-messages" id="aiMessages"></div>
+
+    <div class="ai-input-area">
+        <input type="text"
+               id="aiInput"
+               placeholder="اسألني أي حاجة..."
+               autocomplete="off">
+        <button id="aiSend">📤</button>
+    </div>
+</div>
+{% endif %}
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="{{ url_for('static', filename='js/theme.js') }}?v=6"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}?v=6"></script>
+<script src="{{ url_for('static', filename='js/notifications.js') }}?v=6"></script>
+<script src="{{ url_for('static', filename='js/ai_assistant.js') }}?v=6"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

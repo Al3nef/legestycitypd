@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{{ case.case_number }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:16px">
+    <a href="{{ url_for('cases_list') }}" class="btn-sm" style="background:#24344a">← رجوع للقضايا</a>
+</div>
+
+<div class="case-detail-header priority-{{ case.priority|lower }}">
+    <div class="case-detail-title">
+        <span class="case-number">{{ case.case_number }}</span>
+        <h2>{{ case.title }}</h2>
+    </div>
+    <div>
+        <span class="case-status status-{{ case.status|lower }}">{{ case.status }}</span>
+        <span class="case-priority priority-{{ case.priority|lower }}">{{ case.priority }}</span>
+    </div>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <h3>📋 تفاصيل القضية</h3>
+        <div class="detail-row"><strong>المشتبه به:</strong><span>{{ case.suspect or '—' }}</span></div>
+        <div class="detail-row"><strong>الموقع:</strong><span>{{ case.location or '—' }}</span></div>
+        <div class="detail-row"><strong>الضابط المسؤول:</strong><span>{{ case.lead_officer }}</span></div>
+        <div class="detail-row"><strong>تاريخ الفتح:</strong><span>{{ case.created_at }}</span></div>
+        <div class="detail-row"><strong>آخر تحديث:</strong><span>{{ case.updated_at }}</span></div>
+    </div>
+
+    <div class="card">
+        <h3>⚡ إجراءات</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+            {% if case.status != 'OPEN' %}
+            <a href="{{ url_for('case_update_status', case_id=case.id, new_status='OPEN') }}" class="btn-sm">فتح القضية</a>
+            {% endif %}
+            {% if case.status != 'INVESTIGATING' %}
+            <a href="{{ url_for('case_update_status', case_id=case.id, new_status='INVESTIGATING') }}" class="btn-sm" style="background:#ff9500">تحت التحقيق</a>
+            {% endif %}
+            {% if case.status != 'CLOSED' %}
+            <a href="{{ url_for('case_update_status', case_id=case.id, new_status='CLOSED') }}" class="btn-sm" style="background:#2ecc71">إغلاق القضية</a>
+            {% endif %}
+            {% if case.status != 'ARCHIVED' %}
+            <a href="{{ url_for('case_update_status', case_id=case.id, new_status='ARCHIVED') }}" class="btn-sm" style="background:#4a5a72">أرشفة</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-top:20px">
+    <h3>📄 الوصف الكامل</h3>
+    <p style="line-height:1.9;color:#b0c0d8">{{ case.description }}</p>
+</div>
+
+<div class="card" style="margin-top:20px">
+    <h3>🧾 الأدلة ({{ evidence|length }})</h3>
+
+    <!-- إضافة دليل -->
+    <form method="POST" action="{{ url_for('case_add_evidence', case_id=case.id) }}"
+          enctype="multipart/form-data"
+          style="margin-bottom:16px">
+        <textarea name="content" placeholder="وصف الدليل" required></textarea>
+        <div class="form-row" style="margin-top:10px">
+            <select name="evidence_type">
+                <option value="physical">دليل مادي</option>
+                <option value="digital">دليل رقمي</option>
+                <option value="testimony">شهادة</option>
+                <option value="photo">صورة</option>
+                <option value="document">مستند</option>
+            </select>
+            <button type="submit" class="btn" style="width:auto;padding:12px 24px">إضافة دليل</button>
+        </div>
+
+        <!-- رفع صورة -->
+        <div style="margin-top:12px">
+            <label style="display:block;color:#1e90ff;font-size:13px;margin-bottom:8px;font-weight:700">
+                📷 صورة الدليل (اختياري)
+            </label>
+            <input type="file" name="image" accept="image/*"
+                   style="width:100%;padding:10px;background:rgba(5,8,16,0.6);border:1px solid var(--border);border-radius:10px;color:var(--text)">
+        </div>
+    </form>
+
+    {% for e in evidence %}
+    <div class="evidence-item">
+        <div class="evidence-header">
+            <span class="evidence-type type-{{ e.evidence_type }}">{{ e.evidence_type }}</span>
+            <small>{{ e.added_by }} - {{ e.created_at }}</small>
+        </div>
+        <p>{{ e.content }}</p>
+
+        {% if e.image %}
+        <div style="margin-top:12px;text-align:center">
+            <img src="{{ url_for('uploaded_file', filename=e.image) }}"
+                 alt="دليل"
+                 style="max-width:100%;max-height:400px;border-radius:10px;border:2px solid #1e90ff;cursor:pointer"
+                 onclick="window.open(this.src, '_blank')">
+        </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <p class="muted" style="text-align:center;padding:20px">لا توجد أدلة مسجلة</p>
+    {% endfor %}
+</div>
+{% endblock %}
