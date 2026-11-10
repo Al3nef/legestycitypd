@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}MDT - المخالفات{% endblock %}
+
+{% block content %}
+<div class="mdt-header">
+    <h2>📝 المخالفات المرورية</h2>
+    <a href="{{ url_for('mdt') }}" class="btn-sm" style="background:#24344a">← رجوع</a>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+    <h3>➕ إصدار مخالفة</h3>
+    <form method="POST" action="{{ url_for('mdt_ticket_add') }}">
+        <div class="form-row">
+            <input type="text" name="person_name" placeholder="اسم الشخص" required>
+            <input type="text" name="vehicle_plate" placeholder="رقم اللوحة">
+        </div>
+        <input type="text" name="violation" placeholder="نوع المخالفة" required>
+        <input type="number" name="fine_amount" placeholder="قيمة الغرامة" step="0.01">
+        <button type="submit" class="btn" style="margin-top:12px">إصدار المخالفة</button>
+    </form>
+</div>
+
+{% for t in tickets %}
+<div class="ticket-card">
+    <div class="call-header">
+        <span class="call-number">{{ t.ticket_number }}</span>
+        <small>{{ t.created_at }}</small>
+    </div>
+    <h4>👤 {{ t.person_name }}</h4>
+    <p>{{ t.violation }}</p>
+    <div class="citizen-meta">
+        {% if t.vehicle_plate %}<span>🚗 {{ t.vehicle_plate }}</span>{% endif %}
+        <span>💰 {{ t.fine_amount }}</span>
+        <span>👮 {{ t.issued_by }}</span>
+        <span class="status-badge status-{{ t.status|lower }}">{{ t.status }}</span>
+    </div>
+</div>
+{% else %}
+<p class="muted" style="text-align:center;padding:40px">لا توجد مخالفات</p>
+{% endfor %}
+{% endblock %}

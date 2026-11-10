@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}لوحة التحكم{% endblock %}
+
+{% block content %}
+<h2 class="page-title">لوحة التحكم</h2>
+
+<div class="grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:24px">
+    <div class="stat-card">
+        <div class="stat-icon">👮</div>
+        <div class="stat-value">{{ stats.users }}</div>
+        <div class="stat-label">الضباط</div>
+    </div>
+    <div class="stat-card" style="border-color:#ff9500">
+        <div class="stat-icon">📂</div>
+        <div class="stat-value" style="color:#ff9500">{{ stats.cases }}</div>
+        <div class="stat-label">القضايا</div>
+    </div>
+    <div class="stat-card" style="border-color:#ff2e4e">
+        <div class="stat-icon">🚨</div>
+        <div class="stat-value" style="color:#ff2e4e">{{ stats.open_cases }}</div>
+        <div class="stat-label">قضايا مفتوحة</div>
+    </div>
+    <div class="stat-card" style="border-color:#2ecc71">
+        <div class="stat-icon">💬</div>
+        <div class="stat-value" style="color:#2ecc71">{{ stats.messages }}</div>
+        <div class="stat-label">الرسائل</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📁</div>
+        <div class="stat-value">{{ stats.infos }}</div>
+        <div class="stat-label">المعلومات</div>
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns:1fr">
+    <div class="card">
+        <h3>📁 آخر المعلومات</h3>
+        {% for i in infos %}
+        <div class="user-row">
+            <div>
+                <strong>{{ i.title }}</strong>
+                <small>{{ i.author }} - {{ i.created_at }}</small>
+            </div>
+        </div>
+        {% else %}
+        <p class="muted">لا توجد معلومات</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

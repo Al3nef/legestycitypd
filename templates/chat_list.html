@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}المحادثات{% endblock %}
+
+{% block content %}
+<h2 class="page-title">💬 المحادثات</h2>
+
+<div class="card" style="margin-bottom:20px;background:rgba(30,144,255,0.05);border-color:#1e90ff">
+    <p style="color:#1e90ff;font-size:13px;text-align:center">
+        🔒 المحادثات متاحة فقط للرتب: <strong>Colonel</strong> فما فوق
+    </p>
+</div>
+
+<div class="grid">
+    {% for u in users %}
+    <div class="card">
+        <h3>{{ u.username }}</h3>
+        <p class="muted" style="margin-bottom:12px">
+            #{{ u.badge }} -
+            <span class="rank-badge rank-{{ u.rank|lower|replace(' ', '-') }}">{{ u.rank }}</span>
+        </p>
+        {% if unread[u.username] > 0 %}
+        <span style="color:#ff4757;font-size:13px">🔴 {{ unread[u.username] }} رسالة غير مقروءة</span>
+        {% endif %}
+        <div style="margin-top:12px">
+            <a href="{{ url_for('chat_room', other=u.username) }}" class="btn-sm">
+                💬 فتح محادثة
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <p class="muted">لا يوجد ضباط من الرتب العليا آخرين</p>
+    {% endfor %}
+</div>
+{% endblock %}

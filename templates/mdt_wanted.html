@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}MDT - المطلوبين{% endblock %}
+
+{% block content %}
+<div class="mdt-header">
+    <h2>⚠️ قائمة المطلوبين</h2>
+    <a href="{{ url_for('mdt') }}" class="btn-sm" style="background:#24344a">← رجوع</a>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+    <h3>➕ إضافة مطلوب</h3>
+    <form method="POST" action="{{ url_for('mdt_wanted_add') }}">
+        <div class="form-row">
+            <input type="text" name="full_name" placeholder="الاسم الكامل" required>
+            <input type="text" name="national_id" placeholder="الرقم القومي">
+        </div>
+        <input type="text" name="crime" placeholder="الجريمة" required>
+        <div class="form-row">
+            <select name="danger_level">
+                <option value="LOW">🟢 خطورة منخفضة</option>
+                <option value="MEDIUM" selected>🟡 متوسطة</option>
+                <option value="HIGH">🟠 عالية</option>
+                <option value="EXTREME">🔴 خطير جداً</option>
+            </select>
+            <input type="number" name="reward" placeholder="المكافأة" step="0.01">
+        </div>
+        <textarea name="notes" placeholder="ملاحظات"></textarea>
+        <button type="submit" class="btn" style="margin-top:12px;background:#ff2e4e">إضافة للمطلوبين</button>
+    </form>
+</div>
+
+{% for w in wanted %}
+<div class="wanted-card danger-{{ w.danger_level|lower }}">
+    <div class="wanted-header">
+        <h4>⚠️ {{ w.full_name }}</h4>
+        <span class="danger-badge danger-{{ w.danger_level|lower }}">{{ w.danger_level }}</span>
+    </div>
+    <p><strong>الجريمة:</strong> {{ w.crime }}</p>
+    {% if w.reward > 0 %}
+    <p style="color:#ffd700"><strong>💰 مكافأة:</strong> {{ w.reward }}</p>
+    {% endif %}
+    {% if w.notes %}<p class="muted">{{ w.notes }}</p>{% endif %}
+    <div class="citizen-meta">
+        <span>🆔 {{ w.national_id or '—' }}</span>
+        <span>👮 {{ w.created_by }}</span>
+        <span>📅 {{ w.created_at }}</span>
+    </div>
+    <div style="margin-top:12px">
+        <a href="{{ url_for('mdt_wanted_capture', wid=w.id) }}"
+           class="btn-sm" style="background:#2ecc71"
+           onclick="return confirm('تأكيد القبض على {{ w.full_name }}؟')">✅ تم القبض</a>
+    </div>
+</div>
+{% else %}
+<p class="muted" style="text-align:center;padding:40px">لا يوجد مطلوبين</p>
+{% endfor %}
+{% endblock %}

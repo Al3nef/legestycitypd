@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}المركبات والعتاد{% endblock %}
+
+{% block content %}
+<h2 class="page-title">🚓 إدارة المركبات والعتاد</h2>
+
+<div class="grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px">
+    <div class="stat-card">
+        <div class="stat-icon">🚗</div>
+        <div class="stat-value">{{ stats.total_vehicles }}</div>
+        <div class="stat-label">إجمالي المركبات</div>
+    </div>
+    <div class="stat-card" style="border-color:#2ecc71">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value" style="color:#2ecc71">{{ stats.available }}</div>
+        <div class="stat-label">متاحة</div>
+    </div>
+    <div class="stat-card" style="border-color:#1e90ff">
+        <div class="stat-icon">🔵</div>
+        <div class="stat-value">{{ stats.in_use }}</div>
+        <div class="stat-label">قيد الاستخدام</div>
+    </div>
+    <div class="stat-card" style="border-color:#ff9500">
+        <div class="stat-icon">🔧</div>
+        <div class="stat-value" style="color:#ff9500">{{ stats.maintenance }}</div>
+        <div class="stat-label">صيانة</div>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+    <h3>🚗 إدارة المركبات</h3>
+
+    {% if session.get('is_admin') %}
+    <form method="POST" action="{{ url_for('fleet_add_vehicle') }}"
+          style="margin-bottom:20px;padding:16px;background:rgba(5,8,16,0.5);border-radius:10px">
+        <h4 style="color:#1e90ff;margin-bottom:12px;font-size:14px">➕ إضافة مركبة جديدة</h4>
+        <div class="form-row">
+            <input type="text" name="plate" placeholder="رقم اللوحة" required>
+            <input type="text" name="model" placeholder="الموديل" required>
+        </div>
+        <div class="form-row">
+            <select name="vehicle_type">
+                <option value="patrol">دورية</option>
+                <option value="interceptor">اعتراضية</option>
+                <option value="suv">SUV</option>
+                <option value="motorcycle">دراجة نارية</option>
+                <option value="swat">SWAT</option>
+                <option value="air">جوية</option>
+                <option value="unmarked">مموهة</option>
+            </select>
+            <input type="text" name="location" placeholder="الموقع">
+        </div>
+        <input type="text" name="notes" placeholder="ملاحظات">
+        <button type="submit" class="btn" style="margin-top:8px">إضافة</button>
+    </form>
+    {% endif %}
+
+    <div class="vehicle-grid">
+        {% for v in vehicles %}
+        <div class="vehicle-card status-{{ v.status|lower }}">
+            <div class="vehicle-header">
+                <span class="vehicle-plate">{{ v.plate }}</span>
+                <span class="vehicle-status status-{{ v.status|lower }}">{{ v.status }}</span>
+            </div>
+            <div class="vehicle-model">{{ v.model }}</div>
+            <div class="vehicle-meta">
+                <span>🏷️ {{ v.vehicle_type }}</span>
+                {% if v.location %}<span>📍 {{ v.location }}</span>{% endif %}
+                {% if v.assigned_to %}<span>👮 {{ v.assigned_to }}</span>{% endif %}
+            </div>
+            <div class="vehicle-actions">
+                {% if v.status == 'AVAILABLE' %}
+                <a href="{{ url_for('fleet_update_vehicle', vehicle_id=v.id, new_status='IN_USE') }}"
+                   class="btn-sm" style="background:#1e90ff">استلام</a>
+                {% elif v.status == 'IN_USE' and v.assigned_to == session.get('user') %}
+                <a href="{{ url_for('fleet_update_vehicle', vehicle_id=v.id, new_status='AVAILABLE') }}"
+                   class="btn-sm" style="background:#2ecc71">تسليم</a>
+                {% elif v.status == 'IN_USE' %}
+                <a href="{{ url_for('fleet_update_vehicle', vehicle_id=v.id, new_status='AVAILABLE') }}"
+                   class="btn-sm" style="background:#2ecc71">إعادة للموقف</a>
+                {% endif %}
+                {% if v.status != 'MAINTENANCE' %}
+                <a href="{{ url_for('fleet_update_vehicle', vehicle_id=v.id, new_status='MAINTENANCE') }}"
+                   class="btn-sm" style="background:#ff9500">صيانة</a>
+                {% endif %}
+                {% if session.get('is_admin') %}
+                <a href="{{ url_for('fleet_delete_vehicle', vehicle_id=v.id) }}"
+                   class="btn-sm danger"
+                   onclick="return confirm('حذف المركبة؟')">حذف</a>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <p class="muted">لا توجد مركبات</p>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    <h3>🔫 خزنة الأسلحة ({{ stats.weapons_in_stock }}/{{ stats.total_weapons }} متوفر)</h3>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>الرقم التسلسلي</th>
+                <th>النوع</th>
+                <th>الموديل</th>
+                <th>الحالة</th>
+                <th>بحوزة</th>
+                <th>إجراء</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for w in weapons %}
+            <tr>
+                <td><strong style="color:#1e90ff;font-family:Orbitron,monospace">{{ w.serial }}</strong></td>
+                <td>{{ w.weapon_type }}</td>
+                <td>{{ w.model }}</td>
+                <td>
+                    <span class="weapon-status status-{{ w.status|lower }}">
+                        {{ w.status }}
+                    </span>
+                </td>
+                <td>{{ w.assigned_to or '—' }}</td>
+                <td>
+                    {% if w.status == 'IN_STOCK' %}
+                    <a href="{{ url_for('fleet_assign_weapon', weapon_id=w.id) }}"
+                       class="btn-sm">استلام</a>
+                    {% elif w.assigned_to == session.get('user') %}
+                    <a href="{{ url_for('fleet_assign_weapon', weapon_id=w.id) }}"
+                       class="btn-sm" style="background:#2ecc71">تسليم</a>
+                    {% else %}
+                    <span class="muted" style="font-size:12px">محجوز</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

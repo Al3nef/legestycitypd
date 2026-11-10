@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+{% block title %}البروتوكولات اللاسلكية{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1400px; margin: 0 auto; padding-top: 20px;">
+    
+    <!-- العنوان -->
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h2 style="color: #1e90ff; font-size: 34px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 20px rgba(30,144,255,0.4);">
+            📻 Radio Protocols
+        </h2>
+        <p class="muted" style="margin-top: 8px; font-size: 15px;">دليل البروتوكولات والأكواد اللاسلكية للقسم</p>
+    </div>
+
+    <!-- الشبكة اللي هتشيل الـ 4 كروت (اتنين فوق واتنين تحت) -->
+    <div class="protocols-grid">
+        
+        <!-- 1. كارت 10's (فوق شمال) -->
+        <div class="protocol-card border-blue">
+            <div class="card-header bg-blue-grad">
+                <span class="icon">🔟</span>
+                <h3>10's (الأكواد العشرة)</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th>النطق</th>
+                            <th>المعنى</th>
+                            <th>طريقة البلاغ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge badge-blue">10-1</span></td><td>تن - ون</td><td>مطاردة مركبة</td><td class="text-muted">U-1 | 10-1</td></tr>
+                        <tr><td><span class="badge badge-blue">10-2</span></td><td>تن - تو</td><td>غير صحيح</td><td class="text-muted">U-1 | 10-2</td></tr>
+                        <tr><td><span class="badge badge-blue">10-3</span></td><td>تن - ثري</td><td>استيفاء (مروري/جنائي)</td><td class="text-muted">U-1 | 10-3</td></tr>
+                        <tr><td><span class="badge badge-blue">10-4</span></td><td>تن - فور</td><td>صحيح</td><td class="text-muted">U-1 | 10-4</td></tr>
+                        <tr><td><span class="badge badge-blue">10-5</span></td><td>تن - فايف</td><td>سرقة مركبة</td><td class="text-muted">U-1 | 10-5</td></tr>
+                        <tr><td><span class="badge badge-blue">10-6</span></td><td>تن - سكس</td><td>سرقة منزل</td><td class="text-muted">U-1 | 10-6</td></tr>
+                        <tr><td><span class="badge badge-blue">10-7</span></td><td>تن - سفن</td><td>سرقة بقالة</td><td class="text-muted">U-1 | 10-7</td></tr>
+                        <tr><td><span class="badge badge-blue">10-8</span></td><td>تن - إيت</td><td>سرقة محجوزات</td><td class="text-muted">U-1 | 10-8</td></tr>
+                        <tr><td><span class="badge badge-blue">10-10</span></td><td>تن - تن</td><td>تم الانتهاء من الحالة</td><td class="text-muted">U-1 | 10-10</td></tr>
+                        <tr><td><span class="badge badge-blue">10-19</span></td><td>تن - ناينتين</td><td>مطاردة على الأقدام</td><td class="text-muted">U-1 | 10-19</td></tr>
+                        <tr><td><span class="badge badge-blue">10-20</span></td><td>تن - تونتي</td><td>لوكيوم</td><td class="text-muted">U-1 | 10-20</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2. كارت Code's (فوق يمين) -->
+        <div class="protocol-card border-gold">
+            <div class="card-header bg-gold-grad">
+                <span class="icon">🚔</span>
+                <h3>Code's (الأكواد الأمنية)</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th>النطق</th>
+                            <th>المعنى</th>
+                            <th>طريقة البلاغ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge badge-gold">Code 0</span></td><td>كود زيرو</td><td>عموم الوحدات للحالة (استنفار)</td><td class="text-muted">U-1 | Code 0</td></tr>
+                        <tr><td><span class="badge badge-gold">Code 1</span></td><td>كود ون</td><td>اغلاق السفاني والبوابات</td><td class="text-muted">U-1 | Code 1</td></tr>
+                        <tr><td><span class="badge badge-gold">Code 2</span></td><td>كود تو</td><td>اشغل السفاني فقط</td><td class="text-muted">U-1 | Code 2</td></tr>
+                        <tr><td><span class="badge badge-gold">Code 3</span></td><td>كود ثري</td><td>اشغل السفاني والبوابات</td><td class="text-muted">U-1 | Code 3</td></tr>
+                        <tr><td><span class="badge badge-gold">Code 4</span></td><td>كود فور</td><td>المكان امن وكالي</td><td class="text-muted">U-1 | Code 4</td></tr>
+                        <tr><td><span class="badge badge-gold">Code 6</span></td><td>كود سكس</td><td>جاري التحقق وتفتيش المنطقة</td><td class="text-muted">U-1 | Code 6</td></tr>
+                        <tr><td><span class="badge badge-gold">Code 7</span></td><td>كود سفن</td><td>فلاتش</td><td class="text-muted">U-1 | Code 7</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. كارت Zero's (تحت شمال) -->
+        <div class="protocol-card border-red">
+            <div class="card-header bg-red-grad">
+                <span class="icon">0️⃣</span>
+                <h3>Zero's (حالة الوحدات)</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th>النطق</th>
+                            <th>المعنى</th>
+                            <th>طريقة البلاغ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge badge-red">0-1</span></td><td>زيرو ون</td><td>استراحة أو خروج مؤقت</td><td class="text-muted">U-1 | 0-1 [المدة]</td></tr>
+                        <tr><td><span class="badge badge-red">0-2</span></td><td>زيرو تو</td><td>الاشاره واحده</td><td class="text-muted">U-1 | 0-2</td></tr>
+                        <tr><td><span class="badge badge-red">0-3</span></td><td>زيرو ثري</td><td>التأكد من اشارة الراديو</td><td class="text-muted">U-1 | 0-3</td></tr>
+                        <tr><td><span class="badge badge-red">0-4</span></td><td>زيرو فور</td><td>ألو البلاغ</td><td class="text-muted">U-1 | 0-4</td></tr>
+                        <tr><td><span class="badge badge-red">0-5</span></td><td>زيرو فايف</td><td>(Busy) العسكري مشغول</td><td class="text-muted">U-1 | 0-5 [السبب]</td></tr>
+                        <tr><td><span class="badge badge-red">0-6</span></td><td>زيرو سكس</td><td>خزر البلاغ</td><td class="text-muted">U-1 | 0-6</td></tr>
+                        <tr><td><span class="badge badge-red">0-7</span></td><td>زيرو سفن</td><td>تسجيل خروج</td><td class="text-muted">U-1 | 0-7</td></tr>
+                        <tr><td><span class="badge badge-red">0-8</span></td><td>زيرو إيت</td><td>تسجيل دخول</td><td class="text-muted">U-1 | 0-8</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. كارت الحالات الخاصة (تحت يمين) -->
+        <div class="protocol-card border-purple">
+            <div class="card-header bg-purple-grad">
+                <span class="icon">⚠️</span>
+                <h3>حالات خاصة (Special Cases)</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>الحالة</th>
+                            <th>النطق</th>
+                            <th>المعنى</th>
+                            <th>طريقة البلاغ (الصيغة)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge badge-purple">ShotFire</span></td><td>شوت فاير</td><td>تبادل طلق نار</td><td class="text-red">فروم [تن] (راسلني) [رساله صوتيه]</td></tr>
+                        <tr><td><span class="badge badge-purple">Officer Down</span></td><td>اوفيسر داون</td><td>شرطي مسقط</td><td class="text-red">فروم [تن] (راسلني) [اصابه]</td></tr>
+                        <tr><td><span class="badge badge-purple">BTM</span></td><td>بي تي ام</td><td>صدمة إجرامية</td><td class="text-red">فروم [تن] (راسلني) [BTW]</td></tr>
+                        <tr><td><span class="badge badge-purple">Responding</span></td><td>ريسبوندنق</td><td>الرد علي</td><td class="text-red">فروم [تن] (راسلني) [ستابعني 10-19]</td></tr>
+                        <tr><td><span class="badge badge-purple">Pickup</span></td><td>بيك أب</td><td>وحدة نقل</td><td class="text-red">فروم [تن] (راسلني) [ريك اب]</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- شريط سفلي -->
+    <div style="margin-top: 30px; text-align: center; background: rgba(255, 46, 78, 0.1); border: 1px dashed #ff2e4e; padding: 15px; border-radius: 10px; color: #ff2e4e; font-weight: 700; font-size: 14px;">
+        🚨 هذا الجدول مرجع أساسي، يرجى الالتزام به أثناء التواصل اللاسلكي.
+    </div>
+
+</div>
+
+<style>
+    /* ده الجزء اللي بيخليهم اتنين جمب بعض واتنين تحت بعض */
+    .protocols-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* اتنين متساويين في العرض */
+        gap: 20px; /* المسافة بينهم */
+    }
+    
+    .protocol-card {
+        background: rgba(10, 15, 25, 0.6);
+        border: 1px solid #1e3a5f;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+        backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .protocol-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .border-blue { border-color: #1e90ff; }
+    .border-gold { border-color: #ffd700; }
+    .border-red { border-color: #ff2e4e; }
+    .border-purple { border-color: #9b59b6; }
+
+    .card-header {
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 2px solid transparent;
+    }
+
+    .bg-blue-grad { background: linear-gradient(90deg, rgba(30,144,255,0.2), transparent); border-color: #1e90ff; }
+    .bg-gold-grad { background: linear-gradient(90deg, rgba(255,215,0,0.2), transparent); border-color: #ffd700; }
+    .bg-red-grad { background: linear-gradient(90deg, rgba(255,46,78,0.2), transparent); border-color: #ff2e4e; }
+    .bg-purple-grad { background: linear-gradient(90deg, rgba(155,89,182,0.2), transparent); border-color: #9b59b6; }
+
+    .card-header h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 900;
+        color: #e0e8f5;
+    }
+
+    .card-header .icon { font-size: 24px; }
+
+    .table-responsive {
+        overflow-x: auto;
+        flex: 1;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .modern-table th {
+        background: rgba(255,255,255,0.03);
+        color: #7a8ca8;
+        padding: 12px 15px;
+        text-align: right;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .modern-table td {
+        padding: 10px 15px;
+        font-size: 14px;
+        color: #e0e8f5;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        vertical-align: middle;
+    }
+
+    .modern-table tbody tr { transition: background 0.2s; }
+    .modern-table tbody tr:hover { background: rgba(255,255,255,0.05); }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-family: 'Orbitron', monospace;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-align: center;
+        min-width: 60px;
+    }
+
+    .badge-blue { background: rgba(30,144,255,0.15); color: #1e90ff; border: 1px solid rgba(30,144,255,0.3); }
+    .badge-gold { background: rgba(255,215,0,0.15); color: #ffd700; border: 1px solid rgba(255,215,0,0.3); }
+    .badge-red { background: rgba(255,46,78,0.15); color: #ff2e4e; border: 1px solid rgba(255,46,78,0.3); }
+    .badge-purple { background: rgba(155,89,182,0.15); color: #9b59b6; border: 1px solid rgba(155,89,182,0.3); }
+
+    .text-red { color: #ff2e4e !important; font-weight: 600; font-size: 11px; }
+    .text-muted { color: #7a8ca8 !important; font-size: 12px; font-family: 'Orbitron', monospace; }
+
+    /* عشان في الموبايل ينزلوا تحت بعض */
+    @media (max-width: 900px) {
+        .protocols-grid {
+            grid-template-columns: 1fr;
+        }
+        .modern-table td { font-size: 12px; }
+        .modern-table th { font-size: 10px; }
+    }
+</style>
+{% endblock %}
