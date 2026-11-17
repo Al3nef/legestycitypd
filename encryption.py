@@ -22,7 +22,8 @@ def _get_key(secret: str) -> bytes:
 
 def encrypt_text(plain: str, secret: str = DEFAULT_SECRET) -> str:
     if not CRYPTO_OK:
-        return plain
+        raise Exception("مكتبة cryptography غير مثبتة على السيرفر! أضفها إلى requirements.txt")
+    
     key = _get_key(secret)
     iv = os.urandom(16)
     padder = padding.PKCS7(128).padder()
@@ -35,7 +36,8 @@ def encrypt_text(plain: str, secret: str = DEFAULT_SECRET) -> str:
 
 def decrypt_text(token: str, secret: str = DEFAULT_SECRET) -> str:
     if not CRYPTO_OK:
-        return token
+        raise Exception("مكتبة cryptography غير مثبتة على السيرفر! أضفها إلى requirements.txt")
+    
     try:
         key = _get_key(secret)
         raw = base64.b64decode(token.encode('utf-8'))
